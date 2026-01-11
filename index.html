@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Souvik!</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+/* ---------- CANDLES ---------- */
+.candle-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(60px,1fr));
+    gap:70px 30px;
+    max-width:900px;
+    width:90%;
+    margin:auto;
+}
+.candle{
+    width:35px;
+    height:100px;
+    background:linear-gradient(to right,#ff9a9e,#fecfef,#ff9a9e);
+    border-radius:8px;
+    position:relative;
+    cursor:pointer;
+}
+.wick{
+    position:absolute;
+    top:-12px;
+    left:50%;
+    transform:translateX(-50%);
+    width:3px;
+    height:12px;
+    background:#2d3436;
+}
+.flame{
+    position:absolute;
+    top:-55px;
+    left:50%;
+    transform:translateX(-50%);
+    width:35px;
+    height:50px;
+    background:radial-gradient(ellipse at bottom,#fff 0%,#ffeb3b 20%,#ff9800 50%,#f44336 80%);
+    border-radius:50% 50% 20% 20%;
+    opacity:0;
+    filter:blur(1px);
+}
+.candle.lit .flame{
+    opacity:1;
+    box-shadow:
+        0 -10px 30px #ff9800,
+        0 -20px 60px rgba(255,152,0,.6),
+        0 0 100px rgba(255,152,0,.3);
+    animation:flicker .15s infinite alternate;
+}
+@keyframes flicker{
+    from{transform:translateX(-50%) scale(1) rotate(-1deg)}
+    to{transform:translateX(-50%) scale(1.05) rotate(1deg)}
+}
+
+/* ---------- OVERLAY ---------- */
+#candle-overlay{
+    position:fixed;
+    inset:0;
+    background:radial-gradient(circle,#1e293b,#020617);
+    z-index:9999;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+   
+    justify-content:flex-start;
+    overflow-y:auto;
+    padding:20px 12px 40px;
+}
+
+
+/* ---------- BACKGROUND ---------- */
+@keyframes gradientFlow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+.dynamic-bg{
+    background:linear-gradient(-45deg,#fce7f3,#e0f2fe,#fef3c7,#ede9fe);
+    background-size:400% 400%;
+    animation:gradientFlow 10s ease infinite;
+    min-height:100vh;
+}
+@keyframes textRainbow{
+    0%{color:#2563eb}
+    33%{color:#db2777}
+    66%{color:#7c3aed}
+    100%{color:#2563eb}
+}
+.animate-text-color{animation:textRainbow 3s linear infinite}
+.glass-panel{
+    background:rgba(255,255,255,.4);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.6);
+}
+
+/* ---------- PHOTO CARDS ---------- */
+.card-item{
+    position:absolute;
+    top:0;
+    left:0;
+    transition:all .6s cubic-bezier(.23,1,.32,1);
+}
+</style>
+</head>
+
+<body class="dynamic-bg font-sans text-slate-800 overflow-x-hidden pb-20">
+
+<!-- COUNTDOWN -->
+<div id="countdown" class="text-center my-10">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+Countdown for surprise 🎉
+</p>
+<div class="flex justify-center gap-4">
+<div><div id="days" class="text-xl font-black">000</div><div class="text-xs">Days</div></div>
+<div><div id="hours" class="text-xl font-black">00</div><div class="text-xs">Hrs</div></div>
+<div><div id="minutes" class="text-xl font-black">00</div><div class="text-xs">Min</div></div>
+<div><div id="seconds" class="text-xl font-black">00</div><div class="text-xs">Sec</div></div>
+</div>
+</div>
+
+<!-- CANDLE OVERLAY -->
+<div id="candle-overlay" style="display: none;" >
+<h2 class="text-white text-3xl font-bold mb-3">Light 23 Candles for your 23rd Birthday</h2>
+<p class="text-slate-400 mb-8">Touch each candle to begin 🎂</p>
+<div id="candle-box" class="candle-container"></div>
+<p id="counter" class="text-pink-400 mt-6 text-xl font-mono">0 / 23 Lit</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content" style="display:none;">
+
+<section class="min-h-screen flex items-center justify-center px-4">
+<div class="glass-panel p-10 rounded-[3rem] shadow-2xl text-center max-w-2xl w-full">
+
+<h2 class="text-xl font-bold text-blue-500 mb-2 tracking-widest uppercase">
+Happy Birthday
+</h2>
+
+<h1 class="text-5xl font-black mb-4">
+Dr. <span class="animate-text-color">Souvik Sasmal</span>
+</h1>
+
+<p class="text-lg text-slate-600 mb-8">
+Midnapore Medical College & Hospital
+</p>
+<p class="text-lg text-slate-600 mb-8">
+Celebrating another year of dedication, compassion, and excellence 🩺
+</p>
+
+<button onclick="burstConfetti()" class="bg-white px-8 py-4 rounded-full shadow-xl hover:scale-110 transition mb-10">
+🎂 More Confetti!
+</button>
+
+<!-- PHOTO SECTION -->
+<div class="relative w-64 h-80 mx-auto cursor-pointer" onclick="shuffleCards()">
+<div id="card-container" class="relative w-full h-full">
+
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-30" style="transform:rotate(-2deg)">
+<img src="https://scontent.fccu13-2.fna.fbcdn.net/v/t39.30808-6/613207931_122157147320701826_2144511908183300420_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_ohc=pQlTLq8wmpQQ7kNvwET9-O0&_nc_oc=AdmpXxVIcc6M_vhso25AjhrYgoY-Q7NWbV0e2E4uL3E3HHOjgwyVAcfBXVoqel29cLBZRbkeKHP6skbwTWvZLYjc&_nc_zt=23&_nc_ht=scontent.fccu13-2.fna&_nc_gid=C1TIxeXmapNUp5f3x5bkKQ&oh=00_AfqR1_eeey4fPd23AaNgbUxcanQaDsykkWp4RlDx-d7vng&oe=6969899D" class="w-full h-full object-cover">
+</div>
+
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(3deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/561751809_122148794474701826_5217186741535194772_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Jcr4-ik043AQ7kNvwHlP0Wh&_nc_oc=AdnXyyOGVbfyO6J6EKuzkIEwnUfq34xSZ4_CGgz7m26vXKdfW4icuNz6sw8JrIQ2-D6I4Nx7Fi-vCo7qbmzXG9wE&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=VONlX-iQAOMH11KsfDxnuQ&oh=00_AfpV_gANrdwEA6rKxrev9sYYo5T-aE0Pyh6E0DleHaTKsA&oe=69696EB6" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="img2.jpeg" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-1.fna.fbcdn.net/v/t39.30808-6/489787681_122124816914701826_7563314027382052197_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_ohc=FpDRg_9QlDkQ7kNvwGgvQuB&_nc_oc=Adk4gChdtUKWIoOBkiW0DJ2y0BVvwM9YRrh55k09r9zX_B6zYWxpzxRFMoOqCpcL5DNPbRphwwr79wFFZ_GuKXcF&_nc_zt=23&_nc_ht=scontent.fccu13-1.fna&_nc_gid=JMek_eqe5cEKeYR5cwJ1Sg&oh=00_Afo3S7KqWC6edKlx2RNCs6__zr1fiXQDI6j5bH0P8PJ_lg&oe=696976E5" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/471491063_122101732586701826_1984081091353754538_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=ub7gjdIkpTEQ7kNvwGrRYik&_nc_oc=AdnM1gcn-uKN8I635Hf-gkRkPZiPR8Wip0Wy59PJO_UPV0y4fwEAoH6vhfc0KGoXQ2ZRJxLiJgYjncI02dOvz6uS&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=RiaEKxWKx4WmRhfN1q6Mcw&oh=00_AfoAOdQE4XlBv-XYlS86WdTnlGIOZ2K2nCMw2kNcbz1jWA&oe=69697551" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/490147002_122124815510701826_152506620910009786_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=uRbmPQ8jeCoQ7kNvwHA7ogm&_nc_oc=Adk4ypMCN2H3_8SYrNOU4UJcyXkTLTh0H8O6ThT4SMqzF35ls_0EU8LeqYIutXU9ZxK2LogG2hg2xGHGHA-Ig12y&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=CHKHWxcCKT6se9ZJ4ikVug&oh=00_AfrHFjhd8Jbu1WJhEg9-WlYNjqPu7ZNN1yHhhgmOX_bFFQ&oe=69697D0C" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-2.fna.fbcdn.net/v/t39.30808-6/490198203_122124816104701826_6840882199062185962_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=833d8c&_nc_ohc=PuhbGRVE2qIQ7kNvwHR70GQ&_nc_oc=Adm1Qf1UkiLCr9FI8f_BKMebbMTKjmrPClm6KrA3nGdDGJ6J2meS_pzUOmCMUJdu7yPX-Z6YYoKaarzwFupZeGt3&_nc_zt=23&_nc_ht=scontent.fccu13-2.fna&_nc_gid=BwrDY7nZVz9zCENwp2P6GA&oh=00_AfojxoAQYyshRaNV6MLD_BtX-sBm7erzvCA6DxXotbO-1Q&oe=69697749" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/489508687_122124816008701826_5277107412597666534_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=Vtahhz1CtF4Q7kNvwFuoIPV&_nc_oc=Adme_jxLj_ARTaFYNM9Ls681GUC4dHNEBNZ-sJmcyg4gZPrQCGnt_khdth31hQnN4Y5wMTvLKFOTCIy-5WsKov4_&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=ibh4q9THlUvIbUJ_KpVoUA&oh=00_AfoRfFDPkuuVCgqXxwFnQ3zokPVCQxg3X4-Q-PDF4LDl_g&oe=69699C01" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-1.fna.fbcdn.net/v/t39.30808-6/612613591_122157147404701826_8592087105916656587_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=QpJD4Ox39OEQ7kNvwH2KO_K&_nc_oc=AdmfspU5HklTSqq4UED87lsqQYpipqF1Vi3hQKbtJFhHFBCk5cbeVbF2PlqdfGGlK_J-wiKePqSfLLDgVma1By6v&_nc_zt=23&_nc_ht=scontent.fccu13-1.fna&_nc_gid=5CaIS4cFJ2wa8AjL2JppAQ&oh=00_AfrdaTA_o0Fif_ErMjWV7TbDVTQgQnXwp-I1-paTtQXOgQ&oe=69699E0D" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/489496983_122124815612701826_5072140605936326487_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=2A5t7PORXUwQ7kNvwErHAJ6&_nc_oc=AdnseBsSG2c_O__pz_wz2VprCtLFV3c8Am8-ejEZ0tjMO8-1zIpw6mGKeFF2V_5hUPu7ry9CblN1vP3hlfK8lR-V&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=Mev9cZNgrU7PgA-sz2UDNg&oh=00_Afri754Db2tTYVPxfN_KTE8EkoRU_2J8z24zbkYxTSWj9g&oe=696990AF" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-3.fna.fbcdn.net/v/t39.30808-6/481206427_122116912118701826_2824026844238736762_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=VeRAcOCrppkQ7kNvwFdUUNr&_nc_oc=AdnKAyd8mFxFV3i-Tgl5qTmXvp735RurWu3dtXTSS5mKPnOOYsY7RFD7OTM-QiubdtXsWeXg7pDZ8xMcHMEmH1Tr&_nc_zt=23&_nc_ht=scontent.fccu13-3.fna&_nc_gid=ODsD6KVpXAYm_xJ2Vlxftg&oh=00_AfpAi3H3tx-G6Eq6SlByXx1h2oan7qC-Q-HW4sWCkvGLuA&oe=696993D9" class="w-full h-full object-cover">
+</div>
+<div class="card-item w-full h-full rounded-2xl shadow-2xl border-4 border-white overflow-hidden z-20" style="transform:rotate(4deg)">
+<img src="https://scontent.fccu13-1.fna.fbcdn.net/v/t39.30808-6/573060577_122150447822701826_4165122325790093125_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=bPAE8YhgGb4Q7kNvwHPNaZZ&_nc_oc=Adntvz6SmvvSJhsD9JqLawCOCREUjl-dI2-NYjOrmTUbikSgRPmy9NZSqP7wi-8b3otviGUFWIGk535OllYY3Ciy&_nc_zt=23&_nc_ht=scontent.fccu13-1.fna&_nc_gid=wcKhDIkQbOAJ67D0z3jOGw&oh=00_AfowArMK_ObF6PrGrGq-W63h_NMvgxS2UVsvKOgo0YRqmA&oe=6969780A" class="w-full h-full object-cover">
+</div>
+
+
+</div>
+
+</div>
+</section>
+<!-- 🎁 WISH SECTION -->
+<section class="max-w-4xl mx-auto px-4 mt-16 mb-20">
+    <div class="relative">
+        <!-- Glow -->
+        <div class="absolute -inset-1 bg-gradient-to-r from-pink-400 via-purple-500 to-blue-500 
+                    rounded-3xl blur opacity-40"></div>
+
+        <!-- Card -->
+        <div class="relative glass-panel p-8 md:p-12 rounded-3xl text-center">
+            <div class="flex justify-center mb-4">
+                <i data-lucide="gift" class="text-pink-500 animate-bounce" size="48"></i>
+            </div>
+
+            <h2 class="text-2xl md:text-4xl font-black mb-6 text-slate-800">
+                A Special Birthday Wish 💙
+            </h2>
+
+            <p class="text-base md:text-xl text-slate-700 leading-relaxed font-medium italic">
+                “Happy Birthday, Souvik Da!  
+                May this year bring strength to your hands, clarity to your mind,
+                and kindness to every heart you touch.  
+                From long nights of dedication to saving lives with confidence and care,
+                your journey is truly inspiring.  
+                Wishing you endless success, good health, and happiness always. 🥂”
+            </p>
+
+            <p class="mt-6 text-sm text-slate-500 font-semibold tracking-wide">
+                — With love & best wishes 💫 ~ Rudra
+            </p>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<script>
+lucide.createIcons();
+
+/* ---------- CANDLES ---------- */
+const candleBox = document.getElementById("candle-box");
+const counter = document.getElementById("counter");
+const overlay = document.getElementById("candle-overlay");
+const content = document.getElementById("content");
+let lit = 0;
+
+for(let i=0;i<23;i++){
+    const c = document.createElement("div");
+    c.className="candle";
+    c.innerHTML='<div class="wick"></div><div class="flame"></div>';
+    c.onclick=()=>{
+        if(!c.classList.contains("lit")){
+            c.classList.add("lit");
+            lit++;
+        }
+        counter.textContent = `${lit} / 23 Lit`;
+        if(lit === 23){
+            setTimeout(()=>{
+                overlay.style.display = "none";
+                content.style.display = "block";
+                burstConfetti();
+            },500);
+        }
+    };
+    candleBox.appendChild(c);
+}
+
+/* ---------- COUNTDOWN ---------- */
+const countdownDiv = document.getElementById("countdown");
+
+function updateCountdown(){
+    const now = new Date();
+    const target = new Date("January 12, 2026 00:00:00");
+    const diff = target - now;
+
+    if(diff <= 0){
+        days.textContent = "000";
+        hours.textContent = "00";
+        minutes.textContent = "00";
+        seconds.textContent = "00";
+
+        clearInterval(countdownInterval);
+        countdownDiv.style.display = "none";
+        overlay.style.display = "flex";
+        return;
+    }
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    days.textContent = String(d).padStart(3,"0");
+    hours.textContent = String(h).padStart(2,"0");
+    minutes.textContent = String(m).padStart(2,"0");
+    seconds.textContent = String(s).padStart(2,"0");
+}
+
+const countdownInterval = setInterval(updateCountdown,1000);
+updateCountdown();
+
+/* ---------- CONFETTI ---------- */
+function burstConfetti(){
+    confetti({particleCount:200,spread:100,origin:{y:.7}});
+}
+
+/* ---------- PHOTO SHUFFLE ---------- */
+function shuffleCards(){
+    const container = document.getElementById("card-container");
+    const cards = Array.from(container.children);
+    if(!cards.length) return;
+
+    const top = cards[0];
+    top.style.transform="translateY(-150%) scale(.5) rotate(45deg)";
+    top.style.opacity="0";
+
+    setTimeout(()=>{
+        container.appendChild(top);
+        cards.forEach((c,i)=>{
+            c.style.opacity="1";
+            c.style.zIndex=(cards.length-i)*10;
+            c.style.transform=`rotate(${Math.random()*10-5}deg)`;
+        });
+    },400);
+}
+</script>
+
+</body>
+</html>
